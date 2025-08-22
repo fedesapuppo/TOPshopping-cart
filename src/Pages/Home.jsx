@@ -20,11 +20,45 @@ import {
   FaStar,
   FaHeart
 } from "react-icons/fa";
+import { useCart } from "../context/CartContext";
 
 export default function Home() {
   const bgColor = "gray.50";
   const cardBg = "white";
   const textColor = "gray.600";
+  const { addToCart } = useCart();
+
+  // Sample product data
+  const featuredProducts = [
+    {
+      id: 1,
+      name: "Wireless Headphones",
+      price: 199.99,
+      category: "Electronics",
+      description: "Premium quality wireless headphones with noise cancellation",
+      image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop"
+    },
+    {
+      id: 2,
+      name: "Smart Watch",
+      price: 299.99,
+      category: "Wearables",
+      description: "Feature-rich smartwatch with health monitoring",
+      image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=300&fit=crop"
+    },
+    {
+      id: 3,
+      name: "Running Shoes",
+      price: 129.99,
+      category: "Sports",
+      description: "Comfortable and durable running shoes for athletes",
+      image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=300&fit=crop"
+    }
+  ];
+
+  const handleAddToCart = (product) => {
+    addToCart(product);
+  };
 
   return (
     <Box>
@@ -135,7 +169,7 @@ export default function Home() {
                     <Text fontSize="xl" fontWeight="bold" color="blue.500">
                       $199.99
                     </Text>
-                    <Button colorScheme="blue" size="sm">
+                    <Button colorScheme="blue" size="sm" onClick={() => handleAddToCart(featuredProducts[0])}>
                       Add to Cart
                     </Button>
                   </Flex>
@@ -169,7 +203,7 @@ export default function Home() {
                     <Text fontSize="xl" fontWeight="bold" color="blue.500">
                       $299.99
                     </Text>
-                    <Button colorScheme="blue" size="sm">
+                    <Button colorScheme="blue" size="sm" onClick={() => handleAddToCart(featuredProducts[1])}>
                       Add to Cart
                     </Button>
                   </Flex>
@@ -203,7 +237,7 @@ export default function Home() {
                     <Text fontSize="xl" fontWeight="bold" color="blue.500">
                       $129.99
                     </Text>
-                    <Button colorScheme="blue" size="sm">
+                    <Button colorScheme="blue" size="sm" onClick={() => handleAddToCart(featuredProducts[2])}>
                       Add to Cart
                     </Button>
                   </Flex>
