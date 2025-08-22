@@ -9,11 +9,12 @@ import {
   Image,
   Badge,
   Icon,
-  Flex,
-  Container
+  Container,
+  Input,
 } from "@chakra-ui/react";
-import { FaStar, FaHeart, FaShoppingCart } from "react-icons/fa";
+import { FaStar, FaHeart, FaShoppingCart, FaPlus, FaMinus } from "react-icons/fa";
 import { useCart } from "../context/CartContext";
+import { useState } from "react";
 
 export default function Shop() {
   const { addToCart } = useCart();
@@ -25,7 +26,7 @@ export default function Shop() {
       name: "Wireless Headphones",
       price: 199.99,
       category: "Electronics",
-      description: "Premium quality wireless headphones with noise cancellation",
+      description: "Premium quality wireless headphones",
       image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop",
       rating: 5
     },
@@ -76,8 +77,28 @@ export default function Shop() {
     }
   ];
 
+  // State for quantity inputs - initialize all products with quantity 1
+  const [quantities, setQuantities] = useState(
+    products.reduce((acc, product) => {
+      acc[product.id] = 1;
+      return acc;
+    }, {})
+  );
+
+  const handleQuantityChange = (productId, value) => {
+    const numValue = parseInt(value) || 1;
+    setQuantities(prev => ({
+      ...prev,
+      [productId]: Math.max(1, numValue)
+    }));
+  };
+
   const handleAddToCart = (product) => {
-    addToCart(product);
+    const quantity = quantities[product.id];
+    // Add the product multiple times based on quantity
+    for (let i = 0; i < quantity; i++) {
+      addToCart(product);
+    }
   };
 
   return (
@@ -131,19 +152,36 @@ export default function Shop() {
                     {product.description}
                   </Text>
 
-                  <Flex justify="space-between" align="center">
-                    <Text fontSize="xl" fontWeight="bold" color="blue.500">
+                  <VStack spacing={3} align="stretch">
+                    <Text fontSize="xl" fontWeight="bold" color="blue.500" textAlign="center">
                       ${product.price}
                     </Text>
+
+                    <HStack spacing={2} justify="center">
+                      <Input
+                        type="number"
+                        value={quantities[product.id]}
+                        onChange={(e) => handleQuantityChange(product.id, e.target.value)}
+                        w="16"
+                        textAlign="center"
+                        size="sm"
+                        borderRadius="md"
+                        borderWidth="1px"
+                        borderColor="gray.300"
+                        _focus={{ borderColor: "blue.300", boxShadow: "0 0 0 1px blue.300" }}
+                      />
+                    </HStack>
+
                     <Button
                       colorScheme="blue"
                       size="sm"
                       leftIcon={<FaShoppingCart />}
                       onClick={() => handleAddToCart(product)}
+                      w="full"
                     >
                       Add to Cart
                     </Button>
-                  </Flex>
+                  </VStack>
                 </Box>
               </Box>
             ))}
