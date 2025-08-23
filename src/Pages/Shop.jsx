@@ -11,79 +11,50 @@ import {
   Icon,
   Container,
   Input,
+  Spinner
 } from "@chakra-ui/react";
-import { FaStar, FaHeart, FaShoppingCart, FaPlus, FaMinus } from "react-icons/fa";
+import { FaStar, FaHeart, FaShoppingCart } from "react-icons/fa";
 import { useCart } from "../context/CartContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Shop() {
   const { addToCart } = useCart();
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Sample product data for the shop
-  const products = [
-    {
-      id: 1,
-      name: "Wireless Headphones",
-      price: 199.99,
-      category: "Electronics",
-      description: "Premium quality wireless headphones",
-      image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop",
-      rating: 5
-    },
-    {
-      id: 2,
-      name: "Smart Watch",
-      price: 299.99,
-      category: "Wearables",
-      description: "Feature-rich smartwatch with health monitoring",
-      image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=300&fit=crop",
-      rating: 5
-    },
-    {
-      id: 3,
-      name: "Running Shoes",
-      price: 129.99,
-      category: "Sports",
-      description: "Comfortable and durable running shoes for athletes",
-      image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=300&fit=crop",
-      rating: 5
-    },
-    {
-      id: 4,
-      name: "Laptop",
-      price: 999.99,
-      category: "Electronics",
-      description: "High-performance laptop for work and gaming",
-      image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=300&fit=crop",
-      rating: 4
-    },
-    {
-      id: 5,
-      name: "Smartphone",
-      price: 699.99,
-      category: "Electronics",
-      description: "Latest smartphone with advanced camera features",
-      image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=300&fit=crop",
-      rating: 5
-    },
-    {
-      id: 6,
-      name: "Fitness Tracker",
-      price: 89.99,
-      category: "Wearables",
-      description: "Track your fitness goals with this advanced tracker",
-      image: "https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=400&h=300&fit=crop",
-      rating: 4
-    }
-  ];
+  // State for quantity inputs - will be populated when products load
+  const [quantities, setQuantities] = useState({});
 
-  // State for quantity inputs - initialize all products with quantity 1
-  const [quantities, setQuantities] = useState(
-    products.reduce((acc, product) => {
-      acc[product.id] = 1;
-      return acc;
-    }, {})
-  );
+  // Fetch products from FakeStore API
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('https://fakestoreapi.com/products');
+        if (!response.ok) {
+          throw new Error('Failed to fetch products');
+        }
+        const data = await response.json();
+
+        // Initialize quantities for all products
+        const initialQuantities = data.reduce((acc, product) => {
+          acc[product.id] = 1;
+          return acc;
+        }, {});
+
+        setProducts(data);
+        setQuantities(initialQuantities);
+        setError(null);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const handleQuantityChange = (productId, value) => {
     const numValue = parseInt(value) || 1;
@@ -101,6 +72,37 @@ export default function Shop() {
     }
   };
 
+  // Get category color scheme
+  const getCategoryColor = (category) => {
+    const categoryColors = {
+      "men's clothing": "blue",
+      "women's clothing": "pink",
+      "jewelery": "purple",
+      "electronics": "green"
+    };
+    return categoryColors[category] || "gray";
+  };
+
+  if (loading) {
+    return (
+      <Box textAlign="center" py={20}>
+        <Spinner size="xl" color="blue.500" />
+        <Text mt={4} fontSize="lg">Loading products...</Text>
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box textAlign="center" py={20}>
+        <Box bg="red.100" color="red.800" p={4} borderRadius="md" maxW="md" mx="auto">
+          <Text fontWeight="bold">Error loading products:</Text>
+          <Text>{error}</Text>
+        </Box>
+      </Box>
+    );
+  }
+
   return (
     <Box>
       <Container maxW="container.xl">
@@ -108,7 +110,7 @@ export default function Shop() {
           <Box textAlign="center" py={8}>
             <Heading size="2xl" mb={4}>Shop Our Products</Heading>
             <Text fontSize="lg" color="gray.600">
-              Discover amazing products at unbeatable prices. Start adding them to your cart!
+              Discover amazing products from our curated collection. Start adding them to your cart!
             </Text>
           </Box>
 
@@ -121,38 +123,44 @@ export default function Shop() {
                 overflow="hidden"
                 shadow="lg"
                 _hover={{ transform: "translateY(-4px)", transition: "all 0.3s" }}
+                display="flex"
+                flexDirection="column"
               >
                 <Image
                   src={product.image}
-                  alt={product.name}
+                  alt={product.title}
                   w="full"
                   h="48"
-                  objectFit="cover"
+                  objectFit="contain"
+                  bg="gray.50"
+                  p={4}
                 />
-                <Box p={6}>
+                <Box p={6} display="flex" flexDirection="column" flex="1">
                   <HStack justify="space-between" mb={2}>
-                    <Badge colorScheme={
-                      product.category === "Electronics" ? "blue" :
-                      product.category === "Wearables" ? "green" : "purple"
-                    }>
+                    <Badge colorScheme={getCategoryColor(product.category)}>
                       {product.category}
                     </Badge>
                     <Icon as={FaHeart} color="red.400" cursor="pointer" />
                   </HStack>
 
-                  <Heading size="md" mb={2}>{product.name}</Heading>
+                  <Heading size="md" mb={2} noOfLines={2}>
+                    {product.title}
+                  </Heading>
 
                   <HStack spacing={2} mb={3}>
-                    {Array.from({ length: product.rating }).map((_, index) => (
+                    {Array.from({ length: Math.round(product.rating.rate) }).map((_, index) => (
                       <Icon key={index} as={FaStar} color="yellow.400" />
                     ))}
+                    <Text fontSize="sm" color="gray.500">
+                      ({product.rating.count})
+                    </Text>
                   </HStack>
 
-                  <Text color="gray.600" mb={4} noOfLines={2}>
+                  <Text color="gray.600" mb={4} noOfLines={3}>
                     {product.description}
                   </Text>
 
-                  <VStack spacing={3} align="stretch">
+                  <VStack spacing={3} align="stretch" mt="auto">
                     <Text fontSize="xl" fontWeight="bold" color="blue.500" textAlign="center">
                       ${product.price}
                     </Text>

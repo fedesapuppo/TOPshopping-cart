@@ -10,7 +10,8 @@ import {
   Icon,
   Container,
   Badge,
-  Input
+  Input,
+  Spinner
 } from "@chakra-ui/react";
 import {
   FaShoppingCart,
@@ -18,12 +19,10 @@ import {
   FaShieldAlt,
   FaHeadset,
   FaStar,
-  FaHeart,
-  FaPlus,
-  FaMinus
+  FaHeart
 } from "react-icons/fa";
 import { useCart } from "../context/CartContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Home() {
   const bgColor = "gray.50";
@@ -31,40 +30,42 @@ export default function Home() {
   const textColor = "gray.600";
   const { addToCart } = useCart();
 
-  // Sample product data
-  const featuredProducts = [
-    {
-      id: 1,
-      name: "Wireless Headphones",
-      price: 199.99,
-      category: "Electronics",
-      description: "Premium quality wireless headphones",
-      image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop"
-    },
-    {
-      id: 2,
-      name: "Smart Watch",
-      price: 299.99,
-      category: "Wearables",
-      description: "Feature-rich smartwatch with health monitoring",
-      image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=300&fit=crop"
-    },
-    {
-      id: 3,
-      name: "Running Shoes",
-      price: 129.99,
-      category: "Sports",
-      description: "Comfortable and durable running shoes for athletes",
-      image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=300&fit=crop"
-    }
-  ];
+  const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // State for quantity inputs
-  const [quantities, setQuantities] = useState({
-    1: 1,
-    2: 1,
-    3: 1
-  });
+  const [quantities, setQuantities] = useState({});
+
+  // Fetch featured products from FakeStore API
+  useEffect(() => {
+    const fetchFeaturedProducts = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('https://fakestoreapi.com/products?limit=3');
+        if (!response.ok) {
+          throw new Error('Failed to fetch featured products');
+        }
+        const data = await response.json();
+
+        // Initialize quantities for featured products
+        const initialQuantities = data.reduce((acc, product) => {
+          acc[product.id] = 1;
+          return acc;
+        }, {});
+
+        setFeaturedProducts(data);
+        setQuantities(initialQuantities);
+        setError(null);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFeaturedProducts();
+  }, []);
 
   const handleQuantityChange = (productId, value) => {
     const numValue = parseInt(value) || 1;
@@ -81,6 +82,37 @@ export default function Home() {
       addToCart(product);
     }
   };
+
+  // Get category color scheme
+  const getCategoryColor = (category) => {
+    const categoryColors = {
+      "men's clothing": "blue",
+      "women's clothing": "pink",
+      "jewelery": "purple",
+      "electronics": "green"
+    };
+    return categoryColors[category] || "gray";
+  };
+
+  if (loading) {
+    return (
+      <Box textAlign="center" py={20}>
+        <Spinner size="xl" color="blue.500" />
+        <Text mt={4} fontSize="lg">Loading featured products...</Text>
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box textAlign="center" py={20}>
+        <Alert status="error" borderRadius="md" maxW="md" mx="auto">
+          <AlertIcon />
+          <Text>Error loading featured products: {error}</Text>
+        </Alert>
+      </Box>
+    );
+  }
 
   return (
     <Box>
@@ -163,172 +195,78 @@ export default function Home() {
             <Heading textAlign="center" size="xl">
               Featured Products
             </Heading>
-            <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" }} gap={8}>
-              {/* Product Card 1 */}
-              <Box bg={cardBg} borderRadius="lg" overflow="hidden" shadow="lg" _hover={{ transform: "translateY(-4px)", transition: "all 0.3s" }}>
-                <Image
-                  src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop"
-                  alt="Wireless Headphones"
-                  w="full"
-                  h="48"
-                  objectFit="cover"
-                />
-                <Box p={6}>
-                  <HStack justify="space-between" mb={2}>
-                    <Badge colorScheme="blue">Electronics</Badge>
-                    <Icon as={FaHeart} color="red.400" cursor="pointer" />
-                  </HStack>
-                  <Heading size="md" mb={2}>Wireless Headphones</Heading>
-                  <HStack spacing={2} mb={3}>
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Icon key={star} as={FaStar} color="yellow.400" />
-                    ))}
-                  </HStack>
-                  <Text color={textColor} mb={4}>
-                    Premium quality wireless headphones with noise cancellation
-                  </Text>
-                  <VStack spacing={3} align="stretch">
-                    <Text fontSize="xl" fontWeight="bold" color="blue.500" textAlign="center">
-                      $199.99
-                    </Text>
-
-                    <HStack spacing={2} justify="center">
-                      <Input
-                        type="number"
-                        value={quantities[1]}
-                        onChange={(e) => handleQuantityChange(1, e.target.value)}
-                        w="16"
-                        textAlign="center"
-                        size="sm"
-                        borderRadius="md"
-                        borderWidth="1px"
-                        borderColor="gray.300"
-                        _focus={{ borderColor: "blue.300", boxShadow: "0 0 0 1px blue.300" }}
-                      />
-                    </HStack>
-
-                    <Button
-                      colorScheme="blue"
-                      size="sm"
-                      onClick={() => handleAddToCart(featuredProducts[0])}
-                      w="full"
-                    >
-                      Add to Cart
-                    </Button>
-                  </VStack>
+            {loading ? (
+              <Box textAlign="center" py={10}>
+                <Spinner size="lg" color="blue.500" />
+                <Text mt={4}>Loading featured products...</Text>
+              </Box>
+            ) : error ? (
+              <Box textAlign="center" py={10}>
+                <Box bg="red.100" color="red.800" p={4} borderRadius="md" maxW="md" mx="auto">
+                  <Text fontWeight="bold">Error loading featured products:</Text>
+                  <Text>{error}</Text>
                 </Box>
               </Box>
-
-              {/* Product Card 2 */}
-              <Box bg={cardBg} borderRadius="lg" overflow="hidden" shadow="lg" _hover={{ transform: "translateY(-4px)", transition: "all 0.3s" }}>
-                <Image
-                  src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=300&fit=crop"
-                  alt="Smart Watch"
-                  w="full"
-                  h="48"
-                  objectFit="cover"
-                />
-                <Box p={6}>
-                  <HStack justify="space-between" mb={2}>
-                    <Badge colorScheme="green">Wearables</Badge>
-                    <Icon as={FaHeart} color="red.400" cursor="pointer" />
-                  </HStack>
-                  <Heading size="md" mb={2}>Smart Watch</Heading>
-                  <HStack spacing={2} mb={3}>
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Icon key={star} as={FaStar} color="yellow.400" />
-                    ))}
-                  </HStack>
-                  <Text color={textColor} mb={4}>
-                    Feature-rich smartwatch with health monitoring
-                  </Text>
-                  <VStack spacing={3} align="stretch">
-                    <Text fontSize="xl" fontWeight="bold" color="blue.500" textAlign="center">
-                      $299.99
-                    </Text>
-
-                    <HStack spacing={2} justify="center">
-                      <Input
-                        type="number"
-                        value={quantities[2]}
-                        onChange={(e) => handleQuantityChange(2, e.target.value)}
-                        w="16"
-                        textAlign="center"
-                        size="sm"
-                        borderRadius="md"
-                        borderWidth="1px"
-                        borderColor="gray.300"
-                        _focus={{ borderColor: "blue.300", boxShadow: "0 0 0 1px blue.300" }}
-                      />
+            ) : (
+              <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" }} gap={8}>
+                {featuredProducts.map((product) => (
+                <Box key={product.id} bg={cardBg} borderRadius="lg" overflow="hidden" shadow="lg" _hover={{ transform: "translateY(-4px)", transition: "all 0.3s" }} display="flex" flexDirection="column">
+                  <Image
+                    src={product.image}
+                    alt={product.title}
+                    w="full"
+                    h="48"
+                    objectFit="contain"
+                  />
+                  <Box p={6} display="flex" flexDirection="column" flex="1">
+                    <HStack justify="space-between" mb={2}>
+                      <Badge colorScheme={getCategoryColor(product.category)}>
+                        {product.category}
+                      </Badge>
+                      <Icon as={FaHeart} color="red.400" cursor="pointer" />
                     </HStack>
-
-                    <Button
-                      colorScheme="blue"
-                      size="sm"
-                      onClick={() => handleAddToCart(featuredProducts[1])}
-                      w="full"
-                    >
-                      Add to Cart
-                    </Button>
-                  </VStack>
-                </Box>
-              </Box>
-
-              {/* Product Card 3 */}
-              <Box bg={cardBg} borderRadius="lg" overflow="hidden" shadow="lg" _hover={{ transform: "translateY(-4px)", transition: "all 0.3s" }}>
-                <Image
-                  src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=300&fit=crop"
-                  alt="Running Shoes"
-                  w="full"
-                  h="48"
-                  objectFit="cover"
-                />
-                <Box p={6}>
-                  <HStack justify="space-between" mb={2}>
-                    <Badge colorScheme="purple">Sports</Badge>
-                    <Icon as={FaHeart} color="red.400" cursor="pointer" />
-                  </HStack>
-                  <Heading size="md" mb={2}>Running Shoes</Heading>
-                  <HStack spacing={2} mb={3}>
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Icon key={star} as={FaStar} color="yellow.400" />
-                    ))}
-                  </HStack>
-                  <Text color={textColor} mb={4}>
-                    Comfortable and durable running shoes for athletes
-                  </Text>
-                  <VStack spacing={3} align="stretch">
-                    <Text fontSize="xl" fontWeight="bold" color="blue.500" textAlign="center">
-                      $129.99
-                    </Text>
-
-                    <HStack spacing={2} justify="center">
-                      <Input
-                        type="number"
-                        value={quantities[3]}
-                        onChange={(e) => handleQuantityChange(3, e.target.value)}
-                        w="16"
-                        textAlign="center"
-                        size="sm"
-                        borderRadius="md"
-                        borderWidth="1px"
-                        borderColor="gray.300"
-                        _focus={{ borderColor: "blue.300", boxShadow: "0 0 0 1px blue.300" }}
-                      />
+                    <Heading size="md" mb={2}>{product.title}</Heading>
+                    <HStack spacing={2} mb={3}>
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Icon key={star} as={FaStar} color="yellow.400" />
+                      ))}
                     </HStack>
+                    <Text color={textColor} mb={4}>{product.description}</Text>
 
-                    <Button
-                      colorScheme="blue"
-                      size="sm"
-                      onClick={() => handleAddToCart(featuredProducts[2])}
-                      w="full"
-                    >
-                      Add to Cart
-                    </Button>
-                  </VStack>
+                    <VStack spacing={3} align="stretch" mt="auto">
+                      <Text fontSize="xl" fontWeight="bold" color="blue.500" textAlign="center">
+                        ${product.price}
+                      </Text>
+
+                      <HStack spacing={2} justify="center">
+                        <Input
+                          type="number"
+                          value={quantities[product.id]}
+                          onChange={(e) => handleQuantityChange(product.id, e.target.value)}
+                          w="16"
+                          textAlign="center"
+                          size="sm"
+                          borderRadius="md"
+                          borderWidth="1px"
+                          borderColor="gray.300"
+                          _focus={{ borderColor: "blue.300", boxShadow: "0 0 0 1px blue.300" }}
+                        />
+                      </HStack>
+
+                      <Button
+                        colorScheme="blue"
+                        size="sm"
+                        onClick={() => handleAddToCart(product)}
+                        w="full"
+                      >
+                        Add to Cart
+                      </Button>
+                    </VStack>
+                  </Box>
                 </Box>
-              </Box>
-            </Grid>
+              ))}
+              </Grid>
+            )}
           </VStack>
         </Container>
       </Box>
