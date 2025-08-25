@@ -2,12 +2,16 @@
 
 Yet another one of The Odin Project’s projects 😊
 
-This time, an e-commerce shopping cart application built with React, Chakra UI, and Vite. Features dark/light mode interface, real-time cart management, and integration with the FakeStore API.
+This time, an e-commerce shopping cart application built with React, Chakra UI, and Vite. Features dark/light mode interface, real-time cart management, and integration with the FakeStore API. Live and deployed on Vercel.
 
 ![React](https://img.shields.io/badge/React-18.0.0-blue.svg)
 ![Chakra UI](https://img.shields.io/badge/Chakra%20UI-3.0.0-purple.svg)
 ![Vite](https://img.shields.io/badge/Vite-5.0.0-yellow.svg)
 ![Testing](https://img.shields.io/badge/Testing-Vitest%20+%20RTL-green.svg)
+![Live Demo](https://img.shields.io/badge/Live%20Demo-Online-brightgreen.svg)
+
+## Quick Start
+**Want to see it in action?** [View Live Demo](https://top-shopping-cart-alpha.vercel.app)
 
 ## Features
 
@@ -139,6 +143,9 @@ The application integrates with the [FakeStore API](https://fakestoreapi.com/) t
 
 ## Deployment
 
+### Live Demo
+**Live Application**: [TOP Shopping Cart](https://top-shopping-cart-alpha.vercel.app)
+
 ### Build for Production
 ```bash
 npm run build
@@ -148,5 +155,21 @@ npm run build
 ```bash
 npm run preview
 ```
+
+### Deploy to Vercel
+This project is configured for easy deployment to Vercel:
+
+1. **Install Vercel CLI**:
+   ```bash
+   npm install -g vercel
+   ```
+
+2. **Login and Deploy**:
+   ```bash
+   vercel login
+   vercel --prod
+   ```
+
+3. **Automatic Deployments**: Once connected, every push to your main branch will automatically deploy to Vercel.
 
 The built files will be in the `dist/` directory, ready for deployment to any static hosting service.
