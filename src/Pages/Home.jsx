@@ -13,6 +13,7 @@ import {
   Input,
   Spinner
 } from "@chakra-ui/react";
+import { useColorModeValue } from "../components/ui/color-mode";
 import {
   FaShoppingCart,
   FaTruck,
@@ -25,9 +26,15 @@ import { useCart } from "../context/CartContext";
 import { useState, useEffect } from "react";
 
 export default function Home() {
-  const bgColor = "gray.50";
-  const cardBg = "white";
-  const textColor = "gray.600";
+  // Color mode values
+  const bgColor = useColorModeValue("gray.50", "gray.900");
+  const cardBg = useColorModeValue("white", "gray.800");
+  const textColor = useColorModeValue("gray.600", "gray.300");
+  const headingColor = useColorModeValue("gray.800", "white");
+  const priceColor = useColorModeValue("blue.500", "blue.300");
+  const inputBorderColor = useColorModeValue("gray.300", "gray.600");
+  const inputFocusColor = useColorModeValue("blue.300", "blue.400");
+
   const { addToCart } = useCart();
 
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -125,10 +132,10 @@ export default function Home() {
       >
         <Container maxW="container.xl">
           <VStack spacing={6}>
-            <Heading size="2xl" fontWeight="bold" color="black">
+            <Heading size="2xl" fontWeight="bold" color={useColorModeValue("black", "white")}>
               Welcome to TOP Shopping
             </Heading>
-            <Text fontSize="xl" maxW="2xl" color="black">
+            <Text fontSize="xl" maxW="2xl" color={useColorModeValue("black", "white")}>
               Discover amazing products at unbeatable prices. Shop the latest trends
               with confidence and enjoy fast, secure shopping experience.
             </Text>
@@ -148,7 +155,7 @@ export default function Home() {
       <Box py={14} bg={bgColor}>
         <Container maxW="container.xl">
           <VStack spacing={12}>
-            <Heading textAlign="center" size="xl">
+            <Heading textAlign="center" size="xl" color={headingColor}>
               Why Choose TOP Shopping?
             </Heading>
             <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)", lg: "repeat(4, 1fr)" }} gap={8}>
@@ -192,7 +199,7 @@ export default function Home() {
       <Box py={16}>
         <Container maxW="container.xl">
           <VStack spacing={12}>
-            <Heading textAlign="center" size="xl">
+            <Heading textAlign="center" size="xl" color={headingColor}>
               Featured Products
             </Heading>
             {loading ? (
@@ -202,7 +209,14 @@ export default function Home() {
               </Box>
             ) : error ? (
               <Box textAlign="center" py={10}>
-                <Box bg="red.100" color="red.800" p={4} borderRadius="md" maxW="md" mx="auto">
+                <Box
+                  bg={useColorModeValue("red.100", "red.900")}
+                  color={useColorModeValue("red.800", "red.200")}
+                  p={4}
+                  borderRadius="md"
+                  maxW="md"
+                  mx="auto"
+                >
                   <Text fontWeight="bold">Error loading featured products:</Text>
                   <Text>{error}</Text>
                 </Box>
@@ -225,7 +239,7 @@ export default function Home() {
                       </Badge>
                       <Icon as={FaHeart} color="red.400" cursor="pointer" />
                     </HStack>
-                    <Heading size="md" mb={2}>{product.title}</Heading>
+                    <Heading size="md" mb={2} color={headingColor}>{product.title}</Heading>
                     <HStack spacing={2} mb={3}>
                       {[1, 2, 3, 4, 5].map((star) => (
                         <Icon key={star} as={FaStar} color="yellow.400" />
@@ -234,7 +248,7 @@ export default function Home() {
                     <Text color={textColor} mb={4}>{product.description}</Text>
 
                     <VStack spacing={3} align="stretch" mt="auto">
-                      <Text fontSize="xl" fontWeight="bold" color="blue.500" textAlign="center">
+                      <Text fontSize="xl" fontWeight="bold" color={priceColor} textAlign="center">
                         ${product.price}
                       </Text>
 
@@ -248,8 +262,8 @@ export default function Home() {
                           size="sm"
                           borderRadius="md"
                           borderWidth="1px"
-                          borderColor="gray.300"
-                          _focus={{ borderColor: "blue.300", boxShadow: "0 0 0 1px blue.300" }}
+                          borderColor={inputBorderColor}
+                          _focus={{ borderColor: inputFocusColor, boxShadow: `0 0 0 1px ${inputFocusColor}` }}
                         />
                       </HStack>
 
@@ -275,7 +289,7 @@ export default function Home() {
       <Box py={10} bg={bgColor}>
         <Container maxW="container.xl">
           <VStack spacing={8} textAlign="center">
-            <Heading size="xl">
+            <Heading size="xl" color={headingColor}>
               Ready to Start Shopping?
             </Heading>
             <Text fontSize="lg" color={textColor} maxW="2xl">
