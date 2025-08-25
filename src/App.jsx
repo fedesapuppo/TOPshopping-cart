@@ -1,12 +1,12 @@
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { Box, Flex, Button, HStack, Text, Icon } from "@chakra-ui/react";
-import { useColorModeValue } from "./components/ui/color-mode";
+import { useColorModeValue } from "./components/ui/color-mode.jsx";
 import { FaShoppingCart } from "react-icons/fa";
-import { ColorModeButton } from "./components/ui/color-mode";
-import Home from "./pages/Home";
-import Shop from "./pages/Shop";
-import Cart from "./pages/Cart";
-import { CartProvider, useCart } from "./context/CartContext";
+import { ColorModeButton } from "./components/ui/color-mode.jsx";
+import Home from "./pages/Home.jsx";
+import Shop from "./pages/Shop.jsx";
+import Cart from "./pages/Cart.jsx";
+import { CartProvider, useCart } from "./context/CartContext.jsx";
 
 function NavigationBar() {
   const { getCartCount } = useCart();
@@ -27,13 +27,16 @@ function NavigationBar() {
   return (
     <Flex
       bg={navbarBg}
-      p={4}
+      p={{ base: 2, md: 4 }}
       color={navbarColor}
+      direction="row"
       justify="space-between"
       align="center"
       shadow="md"
+      wrap="wrap"
     >
-      <HStack spacing={4}>
+      {/* Left side buttons - Home and Shop */}
+      <HStack spacing={{ base: 1, md: 4 }}>
         <Button
           as={Link}
           to="/"
@@ -43,6 +46,8 @@ function NavigationBar() {
           bg={buttonBg}
           borderColor={buttonBorderColor}
           borderWidth="1px"
+          size={{ base: "sm", md: "md" }}
+          px={{ base: 2, md: 4 }}
         >
           Home
         </Button>
@@ -55,38 +60,44 @@ function NavigationBar() {
           bg={buttonBg}
           borderColor={buttonBorderColor}
           borderWidth="1px"
+          size={{ base: "sm", md: "md" }}
+          px={{ base: 2, md: 4 }}
         >
           Shop
         </Button>
       </HStack>
 
-      <HStack spacing={4}>
+      {/* Right side buttons - Cart and Color Mode */}
+      <HStack spacing={{ base: 1, md: 4 }}>
         <Button
           as={Link}
           to="/cart"
           variant="ghost"
           bg={cartBg}
-          px={3}
-          py={2}
+          px={{ base: 2, md: 3 }}
+          py={{ base: 1, md: 2 }}
           borderRadius="md"
           shadow="sm"
           _hover={{ bg: useColorModeValue("gray.100", "gray.600") }}
+          size={{ base: "sm", md: "md" }}
         >
-          <HStack spacing={2}>
+          <HStack spacing={{ base: 1, md: 2 }}>
             <Icon as={FaShoppingCart} color={cartColor} />
-            <Text color={cartColor} fontWeight="bold">
+            <Text color={cartColor} fontWeight="bold" fontSize={{ base: "xs", md: "sm" }}>
               Cart: {cartCount} items
             </Text>
           </HStack>
         </Button>
         <Button
           variant="outline"
-          size="md"
+          size={{ base: "sm", md: "md" }}
           color={buttonTextColor}
           borderColor={buttonBorderColor}
           _hover={{ bg: buttonHoverBgColor }}
           bg={buttonBg}
           borderWidth="1px"
+          px={{ base: 3, md: 4 }}
+          display={{ base: "none", md: "inline-flex" }}
         >
           Checkout
         </Button>
@@ -97,6 +108,8 @@ function NavigationBar() {
           _hover={{ bg: buttonHoverBgColor }}
           bg={buttonBg}
           borderWidth="1px"
+          size={{ base: "sm", md: "md" }}
+          px={{ base: 2, md: 4 }}
         />
       </HStack>
     </Flex>

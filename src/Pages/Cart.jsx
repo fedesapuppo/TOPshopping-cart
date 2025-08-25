@@ -11,9 +11,9 @@ import {
   Container,
   Flex
 } from "@chakra-ui/react";
-import { useColorModeValue } from "../components/ui/color-mode";
+import { useColorModeValue } from "../components/ui/color-mode.jsx";
 import { FaTrash, FaShoppingCart, FaArrowLeft } from "react-icons/fa";
-import { useCart } from "../context/CartContext";
+import { useCart } from "../context/CartContext.jsx";
 import { Link } from "react-router-dom";
 
 export default function Cart() {
@@ -74,68 +74,72 @@ export default function Cart() {
                 p={6}
                 borderRadius="lg"
                 shadow="md"
-                display="flex"
-                gap={6}
-                alignItems="center"
               >
-                {/* Product Image */}
-                <Image
-                  src={item.image}
-                  alt={item.title}
-                  w="24"
-                  h="24"
-                  objectFit="cover"
-                  borderRadius="md"
-                />
+                {/* Product Image - Centered */}
+                <VStack align="center" mb={4}>
+                  <Image
+                    src={item.image}
+                    alt={item.title}
+                    w="32"
+                    h="32"
+                    objectFit="cover"
+                    borderRadius="md"
+                  />
+                </VStack>
 
-                {/* Product Details */}
-                <VStack align="start" flex="1" spacing={2}>
-                  <Heading size="md" color={headingColor} noOfLines={2}>
+                {/* Product Details - Centered */}
+                <VStack align="center" spacing={3} mb={4}>
+                  <Heading size="md" color={headingColor} noOfLines={2} textAlign="center">
                     {item.title}
                   </Heading>
                   <Badge colorScheme="blue">{item.category}</Badge>
-                  <Text color={textColor} noOfLines={2}>
+                  <Text color={textColor} noOfLines={3} textAlign="center">
                     {item.description}
                   </Text>
                 </VStack>
 
-                {/* Quantity Controls */}
-                <VStack spacing={2} align="center">
-                  <Text fontSize="sm" color={textColor}>Quantity</Text>
-                  <HStack spacing={2}>
+                {/* Quantity Controls - Centered */}
+                <VStack spacing={3} align="center" mb={4}>
+                  <Text fontSize="sm" color={textColor} fontWeight="medium">Quantity</Text>
+                  <HStack spacing={3}>
                     <Button
-                      size="sm"
+                      size="md"
                       onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
                       isDisabled={item.quantity <= 1}
+                      colorScheme="blue"
+                      variant="outline"
                     >
                       -
                     </Button>
-                    <Text fontWeight="bold" minW="8" textAlign="center">
+                    <Text fontWeight="bold" fontSize="lg" minW="10" textAlign="center">
                       {item.quantity}
                     </Text>
                     <Button
-                      size="sm"
+                      size="md"
                       onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+                      colorScheme="blue"
+                      variant="outline"
                     >
                       +
                     </Button>
                   </HStack>
                 </VStack>
 
-                {/* Price and Remove */}
+                {/* Price and Remove - Centered */}
                 <VStack spacing={3} align="center">
-                  <Text fontSize="xl" fontWeight="bold" color={priceColor}>
+                  <Text fontSize="2xl" fontWeight="bold" color={priceColor}>
                     ${(item.price * item.quantity).toFixed(2)}
                   </Text>
                   <Text fontSize="sm" color={textColor}>
                     ${item.price} each
                   </Text>
                   <Button
-                    size="sm"
+                    size="md"
                     colorScheme="red"
                     variant="outline"
                     leftIcon={<FaTrash />}
                     onClick={() => removeFromCart(item.id)}
+                    w="full"
                   >
                     Remove
                   </Button>
@@ -146,23 +150,28 @@ export default function Cart() {
 
           {/* Cart Summary */}
           <Box bg={cardBg} p={6} borderRadius="lg" shadow="md">
-            <VStack spacing={4} align="stretch">
-              <Box borderTop="1px" borderColor={useColorModeValue("gray.200", "gray.600")} />
-              <Flex justify="space-between" align="center">
+            <VStack spacing={6} align="center">
+              <Box borderTop="1px" borderColor={useColorModeValue("gray.200", "gray.600")} w="full" />
+
+              {/* Total Items - Centered */}
+              <VStack spacing={2} align="center">
                 <Text fontSize="lg" fontWeight="bold" color={headingColor}>
                   Total Items: {cartItems.reduce((sum, item) => sum + item.quantity, 0)}
                 </Text>
-                <Text fontSize="2xl" fontWeight="bold" color={priceColor}>
+                <Text fontSize="3xl" fontWeight="bold" color={priceColor}>
                   Total: ${getCartTotal().toFixed(2)}
                 </Text>
-              </Flex>
+              </VStack>
 
-              <HStack spacing={4} justify="center">
+              {/* Action Buttons - Vertically Stacked */}
+              <VStack spacing={3} align="stretch" w="full">
                 <Button
                   colorScheme="red"
                   variant="outline"
                   onClick={clearCart}
                   leftIcon={<FaTrash />}
+                  size="lg"
+                  w="full"
                 >
                   Clear Cart
                 </Button>
@@ -170,10 +179,11 @@ export default function Cart() {
                   colorScheme="blue"
                   size="lg"
                   leftIcon={<FaShoppingCart />}
+                  w="full"
                 >
                   Proceed to Checkout
                 </Button>
-              </HStack>
+              </VStack>
             </VStack>
           </Box>
         </VStack>

@@ -13,7 +13,7 @@ import {
   Input,
   Spinner
 } from "@chakra-ui/react";
-import { useColorModeValue } from "../components/ui/color-mode";
+import { useColorModeValue } from "../components/ui/color-mode.jsx";
 import {
   FaShoppingCart,
   FaTruck,
@@ -22,7 +22,7 @@ import {
   FaStar,
   FaHeart
 } from "react-icons/fa";
-import { useCart } from "../context/CartContext";
+import { useCart } from "../context/CartContext.jsx";
 import { useState, useEffect } from "react";
 
 export default function Home() {
