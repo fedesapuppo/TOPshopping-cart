@@ -5,6 +5,7 @@ import { FaShoppingCart } from "react-icons/fa";
 import { ColorModeButton } from "./components/ui/color-mode";
 import Home from "./pages/Home";
 import Shop from "./pages/Shop";
+import Cart from "./pages/Cart";
 import { CartProvider, useCart } from "./context/CartContext";
 
 function NavigationBar() {
@@ -60,12 +61,24 @@ function NavigationBar() {
       </HStack>
 
       <HStack spacing={4}>
-        <HStack spacing={2} bg={cartBg} px={3} py={2} borderRadius="md" shadow="sm">
-          <Icon as={FaShoppingCart} color={cartColor} />
-          <Text color={cartColor} fontWeight="bold">
-            Cart: {cartCount} items
-          </Text>
-        </HStack>
+        <Button
+          as={Link}
+          to="/cart"
+          variant="ghost"
+          bg={cartBg}
+          px={3}
+          py={2}
+          borderRadius="md"
+          shadow="sm"
+          _hover={{ bg: useColorModeValue("gray.100", "gray.600") }}
+        >
+          <HStack spacing={2}>
+            <Icon as={FaShoppingCart} color={cartColor} />
+            <Text color={cartColor} fontWeight="bold">
+              Cart: {cartCount} items
+            </Text>
+          </HStack>
+        </Button>
         <Button
           variant="outline"
           size="md"
@@ -100,6 +113,7 @@ export default function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/shop" element={<Shop />} />
+              <Route path="/cart" element={<Cart />} />
             </Routes>
           </Box>
         </Box>

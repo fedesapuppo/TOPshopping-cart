@@ -113,10 +113,17 @@ export default function Home() {
   if (error) {
     return (
       <Box textAlign="center" py={20}>
-        <Alert status="error" borderRadius="md" maxW="md" mx="auto">
-          <AlertIcon />
-          <Text>Error loading featured products: {error}</Text>
-        </Alert>
+        <Box
+          bg={useColorModeValue("red.100", "red.900")}
+          color={useColorModeValue("red.800", "red.200")}
+          p={4}
+          borderRadius="md"
+          maxW="md"
+          mx="auto"
+        >
+          <Text fontWeight="bold">Error loading featured products:</Text>
+          <Text>{error}</Text>
+        </Box>
       </Box>
     );
   }
